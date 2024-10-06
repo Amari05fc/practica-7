@@ -5,16 +5,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{.title}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1em;
+            text-align: center;
+        }
+        nav {
+            background-color: #333;
+            overflow: hidden;
+        }
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        nav ul li {
+            float: left;
+        }
+        nav ul li {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+        nav ul li {
+            background-color: #111;
+        }
+        main {
+            padding: 1em;
+        }
+        section {
+            margin-bottom: 2em;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1em;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
 </head>
-<body>
-    <H1>Hola mundo</H1>
-    <p>Desde servidor en GO</p>
-    <h3>Total de usuarios registrados {{.total_users }}</h3>
-    <ul>
-        {{range .users}}
-        <li>{{.Name }} - {{.Email}}</li>
-        {{ end }}
-    </ul>
+<body >
+    <nav>
+        <H1>Hola mundo</H1>
+    </nav>
+
+    <main>
+        <p>Desde servidor en GO</p>
+        <h3>Usuarios</h3>
+        <p>Total de usuarios registrados<strong>{{.total_users }}</strong></p>
+        <ul>
+            {{range .users}}
+            <li>{{.Name }} - {{.Email}}</li>
+            {{ end }}
+        </ul>
+    </main>
+
+    <footer>
+        <p>Fernanda Cruz Hernández</p>
+    </footer>
     
 </body>
 </html>

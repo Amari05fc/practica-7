@@ -78,7 +78,6 @@ func main() {
 		c.JSON(201, gin.H{})
 	})
 
-
 	//Actualizar usuarios
 	router.PUT("/api/users/:id", func(c *gin.Context) {
 		id := c.Param("id")
