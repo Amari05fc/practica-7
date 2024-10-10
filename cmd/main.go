@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Amari05fc/practica-7/database"
+	"github.com/Amari05fc/practica-7/servicios"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,6 +17,18 @@ type User struct {
 }
 
 func main() {
+	//Base de datos conectada
+	//El NewDatabaseDriver es para crear un nueva BD
+	db, err := database.NewDatabaseDriver()
+	if err != nil {
+		fmt.Println("Error al conectar a la base de datos: ", err)
+		return
+	}
+	fmt.Println("Base de datos")
+	db.AutoMigrate(&database.User{})
+	fmt.Println("AutoMigrate")
+	userService := servicios.NewUserService(db)
+
 	router := gin.Default()
 	users := []User{}
 	indexUser := 1
@@ -29,9 +43,9 @@ func main() {
 	})
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(200, "index.html", gin.H{
-			"title": "Main website",
+			"title":       "Main website",
 			"total_users": len(users),
-			"users": users,
+			"users":       users,
 		})
 	})
 	//API URLs
@@ -48,12 +62,20 @@ func main() {
 			users = append(users, user)
 			indexUser++
 			c.JSON(200, user)
+			fmt.Println(user.Id, user.Email, user.Name)
+			userService.CreateUser(database.User{
+				Id:    user.Id,
+				Name:  user.Name,
+				Email: user.Email,
+			})
+			fmt.Println("Insertando en la Base de Datos")
 		} else {
 			c.JSON(400, gin.H{
 				"error": "Invalid payload",
 			})
 		}
 	})
+	
 	//Eliminacion de usuarios
 	router.DELETE("/api/users/:id", func(c *gin.Context) {
 		fmt.Println("Delete")
@@ -90,7 +112,7 @@ func main() {
 		}
 		var user User
 		err = c.BindJSON(&user)
-		if err != nil{
+		if err != nil {
 			c.JSON(400, gin.H{
 				"error": "Invalid payload",
 			})
