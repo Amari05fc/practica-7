@@ -51,16 +51,23 @@ func main() {
 	//API URLs
 	//Obtener usuarios
 	router.GET("/api/users", func(c *gin.Context) {
+		db.Find(&users)
 		c.JSON(200, users)
 	})
 
 	//Creacion de usuarios
 	router.POST("/api/users", func(c *gin.Context) {
 		var user User
+
+		db.Last(&user)
+
+		indexUser = user.Id
+		indexUser++
+			
 		if c.BindJSON(&user) == nil {
 			user.Id = indexUser
 			users = append(users, user)
-			indexUser++
+			
 			c.JSON(200, user)
 			fmt.Println(user.Id, user.Email, user.Name)
 			userService.CreateUser(database.User{
@@ -75,9 +82,10 @@ func main() {
 			})
 		}
 	})
-	
+
 	//Eliminacion de usuarios
 	router.DELETE("/api/users/:id", func(c *gin.Context) {
+		var user User
 		fmt.Println("Delete")
 		id := c.Param("id")
 		idParsed, err := strconv.Atoi(id)
@@ -88,6 +96,7 @@ func main() {
 			return
 		}
 		fmt.Println("Id a borrar: ", id)
+		db.Delete(user, id)
 		for i, user := range users {
 			if user.Id == idParsed {
 				users = append(users[:i], users[i+1:]...)
@@ -102,7 +111,9 @@ func main() {
 
 	//Actualizar usuarios
 	router.PUT("/api/users/:id", func(c *gin.Context) {
+		var user User
 		id := c.Param("id")
+
 		idParsed, err := strconv.Atoi(id)
 		if err != nil {
 			c.JSON(400, gin.H{
@@ -110,15 +121,20 @@ func main() {
 			})
 			return
 		}
-		var user User
+
 		err = c.BindJSON(&user)
+
 		if err != nil {
 			c.JSON(400, gin.H{
 				"error": "Invalid payload",
 			})
 			return
 		}
+
 		fmt.Println("Id a actualizar: ", id)
+		user.Id = idParsed
+		db.Save(&user)
+
 		for i, u := range users {
 			if u.Id == idParsed {
 				users[i] = user
